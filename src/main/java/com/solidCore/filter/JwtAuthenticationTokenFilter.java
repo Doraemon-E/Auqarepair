@@ -1,11 +1,7 @@
 package com.solidCore.filter;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.solidCore.entity.Token;
-import com.solidCore.entity.User;
-import com.solidCore.mapper.TokenMapper;
-import com.solidCore.mapper.UserMapper;
 import com.solidCore.model.dto.LoginUser;
+import com.solidCore.utils.GuavaCacheUtils;
 import com.solidCore.utils.JwtUtils;
 import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,11 +28,9 @@ import java.util.Objects;
 @Component
 public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
-    @Autowired
-    TokenMapper tokenMapper;
 
     @Autowired
-    UserMapper userMapper;
+    GuavaCacheUtils guavaCacheUtils;
 
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
@@ -51,17 +45,11 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         // 解析token
         Claims tokenBody = JwtUtils.getTokenBody(authorization);
         String username = tokenBody.getSubject();
-        // 从Mysql中获取用户信息
-        QueryWrapper<Token> tokenQueryWrapper = new QueryWrapper<>();
-        tokenQueryWrapper.eq("username", username);
-        Token token = tokenMapper.selectOne(tokenQueryWrapper);
-        if(Objects.isNull(token)){
+        // 从Cache中获取用户信息
+        LoginUser loginUser = (LoginUser) guavaCacheUtils.get("Login:" + username);
+        if(Objects.isNull(loginUser)){
             throw new RuntimeException("token非法");
         }
-        QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
-        userQueryWrapper.eq("username", username);
-        User user = userMapper.selectOne(userQueryWrapper);
-        LoginUser loginUser = new LoginUser(user);
         HttpServletRequestWrapper httpServletRequestWrapper = new HttpServletRequestWrapper(httpServletRequest);
         httpServletRequestWrapper.setAttribute("LoginUser",loginUser);
 

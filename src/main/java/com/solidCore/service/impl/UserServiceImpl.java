@@ -3,11 +3,10 @@ package com.solidCore.service.impl;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.solidCore.entity.Token;
 import com.solidCore.entity.User;
-import com.solidCore.mapper.TokenMapper;
 import com.solidCore.mapper.UserMapper;
 import com.solidCore.model.dto.LoginUser;
+import com.solidCore.utils.GuavaCacheUtils;
 import com.solidCore.utils.Result;
 import com.solidCore.service.UserService;
 import com.solidCore.utils.JwtUtils;
@@ -41,7 +40,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     UserMapper userMapper;
 
     @Autowired
-    TokenMapper tokenMapper;
+    GuavaCacheUtils guavaCacheUtils;
 
     @Override
     public Result login(User user) throws Exception {
@@ -61,11 +60,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         HashMap<String, String> token = new HashMap<>();
         token.put("token", jwt);
 
-        // 写入mysql
-        Token loginToken = new Token();
-        loginToken.setUsername(username);
-        loginToken.setToken(jwt);
-        tokenMapper.insert(loginToken);
+        // 写入Cache
+        guavaCacheUtils.put("Login:" + username, loginUser);
 
         return Result.ok("登陆成功",token);
     }
@@ -88,10 +84,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     @Override
     public Result logout(HttpServletRequest httpServletRequest) {
         LoginUser loginUser = (LoginUser) httpServletRequest.getAttribute("LoginUser");
-        QueryWrapper<Token> tokenQueryWrapper = new QueryWrapper<>();
-        tokenQueryWrapper.eq("username", loginUser.getUsername());
-        tokenMapper.delete(tokenQueryWrapper);
-
+        guavaCacheUtils.remove("Login:" + loginUser.getUsername());
+        log.info("登出成功");
         return Result.ok("请求成功");
     }
 }
