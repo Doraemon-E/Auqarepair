@@ -69,8 +69,11 @@ public class AquaRepairApplicationTest extends TestCase{
         }
         String cache1111 = (String)guavaCacheUtils.get("lulu");
         log.info("get cache value is: {}", cache1111);
+    }
 
-
-
+    @Test
+    public void TestTimeStamp() {
+        long l = System.currentTimeMillis();
+        log.info("timestamp is {}", l);
     }
 }

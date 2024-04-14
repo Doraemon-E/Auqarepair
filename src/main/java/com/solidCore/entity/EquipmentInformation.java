@@ -7,53 +7,60 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 /**
- * 
- * @author tongsheng
- * @TableName user
+ * 装备信息实体类
+ * 对应数据库表：equipment_information
  */
-@TableName(value ="user")
+@TableName(value ="equipment_information")
 @Data
-public class User implements Serializable {
+public class EquipmentInformation implements Serializable {
     /**
-     * 
+     * 编号
      */
     @TableId(value = "id", type = IdType.AUTO)
-    private Long id;
+    private Integer id;
 
     /**
-     * 用户名
+     * 装备类别
      */
-    @TableField(value = "username")
-    private String username;
+    @TableField(value = "equipment_category")
+    private String equipmentCategory;
 
     /**
-     * 密码
+     * 装备品牌
      */
-    @TableField(value = "password")
-    private String password;
+    @TableField(value = "equipment_brand")
+    private String equipmentBrand;
+
+    /**
+     * 装备型号
+     */
+    @TableField(value = "equipment_model")
+    private String equipmentModel;
 
     /**
      * 创建时间
      */
     @TableField(value = "create_time")
-    private LocalDateTime createTime;
+    private LocalDate createTime;
 
     /**
      * 更新时间
      */
     @TableField(value = "update_time")
-    private LocalDateTime updateTime;
+    private LocalDate updateTime;
 
     /**
-     * 是否删除
+     * 删除标志
      */
     @TableField(value = "is_delete")
     private boolean isDelete;
 
-
+    /**
+     * 序列化版本号
+     */
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }

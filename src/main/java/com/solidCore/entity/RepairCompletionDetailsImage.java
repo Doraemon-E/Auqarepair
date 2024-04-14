@@ -7,53 +7,52 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 /**
- * 
- * @author tongsheng
- * @TableName user
+ * 维修完成详情图片实体类
  */
-@TableName(value ="user")
 @Data
-public class User implements Serializable {
+public class RepairCompletionDetailsImage implements Serializable {
     /**
-     * 
+     * 图片ID
      */
     @TableId(value = "id", type = IdType.AUTO)
-    private Long id;
+    private Integer id;
 
     /**
-     * 用户名
+     * 报告ID
      */
-    @TableField(value = "username")
-    private String username;
+    @TableField(value = "form_id")
+    private Integer formId;
 
     /**
-     * 密码
+     * 图片名称
      */
-    @TableField(value = "password")
-    private String password;
+    @TableField(value = "image_name")
+    private String imageName;
+
+    /**
+     * 图片URL
+     */
+    @TableField(value = "image_url")
+    private String imageUrl;
 
     /**
      * 创建时间
      */
     @TableField(value = "create_time")
-    private LocalDateTime createTime;
+    private LocalDate createTime;
 
     /**
-     * 更新时间
-     */
-    @TableField(value = "update_time")
-    private LocalDateTime updateTime;
-
-    /**
-     * 是否删除
+     * 删除标志
      */
     @TableField(value = "is_delete")
     private boolean isDelete;
 
-
+    /**
+     * 序列化版本号
+     */
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }
